@@ -24,6 +24,7 @@ cmake_args=(
     -D DESKTOP_APP_DISABLE_AUTOUPDATE=ON
     -D DESKTOP_APP_DISABLE_CRASH_REPORTS=ON
     -D DESKTOP_APP_USE_PACKAGED_FONTS=ON
+    -D DESKTOP_APP_ENABLE_LTO=ON
 )
 
 ./Telegram/configure.sh "${cmake_args[@]}"
