@@ -294,14 +294,6 @@ TimeId AppConfig::groupCallMessageTTL() const {
 	return get<int>(u"group_call_message_ttl"_q, 10);
 }
 
-int AppConfig::passkeysAccountPasskeysMax() const {
-	return get<int>(u"passkeys_account_passkeys_max"_q, 10);
-}
-
-bool AppConfig::settingsDisplayPasskeys() const {
-	return get<bool>(u"settings_display_passkeys"_q, false);
-}
-
 int64 AppConfig::stakeDiceNanoTonMin() const {
 	return get<int64>(u"ton_stakedice_stake_amount_min"_q, 100'000'000LL);
 }

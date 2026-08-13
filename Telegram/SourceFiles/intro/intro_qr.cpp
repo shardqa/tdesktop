@@ -8,8 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "intro/intro_qr.h"
 
 #include "boxes/abstract_box.h"
-#include "data/components/passkeys.h"
-#include "data/data_passkey_deserialize.h"
+
 #include "intro/intro_phone.h"
 #include "intro/intro_widget.h"
 #include "intro/intro_password_check.h"
@@ -30,7 +29,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/update_checker.h"
 #include "base/unixtime.h"
 #include "qr/qr_generate.h"
-#include "platform/platform_webauthn.h"
+
 #include "styles/style_intro.h"
 
 namespace Intro {
@@ -226,12 +225,6 @@ QrWidget::QrWidget(
 		refreshCode();
 	}, lifetime());
 
-	account->appConfig().value(
-	) | rpl::filter([=] {
-		return !_passkey;
-	}) | rpl::on_next([=] {
-		setupPasskeyLink();
-	}, lifetime());
 }
 
 QString QrWidget::accessibilityName() {
@@ -369,75 +362,6 @@ void QrWidget::setupControls() {
 	}, _skip->lifetime());
 
 	_skip->setClickedCallback([=] { submit(); });
-}
-
-void QrWidget::setupPasskeyLink() {
-	Expects(!_passkey);
-
-	if (!account().appConfig().settingsDisplayPasskeys()
-		|| !Platform::WebAuthn::IsSupported()) {
-		return;
-	}
-	_passkey = Ui::CreateChild<Ui::LinkButton>(
-		this,
-		tr::lng_intro_qr_passkey(tr::now));
-	_passkey->show();
-	rpl::combine(
-		sizeValue(),
-		_passkey->widthValue()
-	) | rpl::on_next([=](QSize size, int passkeyWidth) {
-		_passkey->moveToLeft(
-			(size.width() - passkeyWidth) / 2,
-			(contentTop()
-				+ st::introQrSkipTop
-				+ 1.5 * st::normalFont->height));
-	}, _passkey->lifetime());
-
-	_passkey->setClickedCallback([=] {
-		const auto attempt = [=](
-				const ::Data::Passkey::LoginData &loginData) {
-			const auto initialDc = _passkeyLoginDc;
-			Platform::WebAuthn::Login(loginData, crl::guard(this, [=](
-					Platform::WebAuthn::LoginResult result) {
-				if (result.userHandle.isEmpty()) {
-					using Error = Platform::WebAuthn::Error;
-					if (result.error == Error::UnsignedBuild) {
-						showError(
-							tr::lng_settings_passkeys_unsigned_error());
-					}
-					return;
-				}
-				::Data::FinishPasskeyLogin(
-					api(),
-					initialDc,
-					result,
-					[=](const MTPauth_Authorization &auth) { done(auth); },
-					[=](QString error) {
-						_passkeyLoginData = std::nullopt;
-						if (error == u"SESSION_PASSWORD_NEEDED"_q) {
-							sendCheckPasswordRequest();
-						} else {
-							showError(rpl::single(error));
-						}
-					});
-			}));
-		};
-		if (_passkeyLoginData
-			&& (crl::now() - _passkeyLoginTime
-				< crl::time(_passkeyLoginData->timeout))) {
-			attempt(*_passkeyLoginData);
-		} else {
-			_passkeyLoginData = std::nullopt;
-			const auto initedDc = api().instance().mainDcId();
-			::Data::InitPasskeyLogin(api(), [=](
-				const ::Data::Passkey::LoginData &loginData) {
-				_passkeyLoginData = loginData;
-				_passkeyLoginTime = crl::now();
-				_passkeyLoginDc = initedDc;
-				attempt(loginData);
-			});
-		}
-	});
 }
 
 void QrWidget::refreshCode() {

@@ -134,8 +134,7 @@ public:
 	[[nodiscard]] int groupCallMessageLengthLimit() const;
 	[[nodiscard]] TimeId groupCallMessageTTL() const;
 
-	[[nodiscard]] int passkeysAccountPasskeysMax() const;
-	[[nodiscard]] bool settingsDisplayPasskeys() const;
+
 
 	[[nodiscard]] int64 stakeDiceNanoTonMin() const;
 	[[nodiscard]] int64 stakeDiceNanoTonMax() const;

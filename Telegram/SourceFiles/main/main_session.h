@@ -44,7 +44,6 @@ class Factchecks;
 class LocationPickers;
 class Credits;
 class PromoSuggestions;
-class Passkeys;
 } // namespace Data
 
 namespace Settings {
@@ -221,9 +220,6 @@ public:
 	[[nodiscard]] Data::PromoSuggestions &promoSuggestions() const {
 		return *_promoSuggestions;
 	}
-	[[nodiscard]] Data::Passkeys &passkeys() const {
-		return *_passkeys;
-	}
 	[[nodiscard]] Settings::FaqSuggestions &faqSuggestions() const {
 		return *_faqSuggestions;
 	}
@@ -337,7 +333,6 @@ private:
 	const std::unique_ptr<Data::LocationPickers> _locationPickers;
 	const std::unique_ptr<Data::Credits> _credits;
 	const std::unique_ptr<Data::PromoSuggestions> _promoSuggestions;
-	const std::unique_ptr<Data::Passkeys> _passkeys;
 	const std::unique_ptr<Settings::FaqSuggestions> _faqSuggestions;
 	const std::unique_ptr<Settings::RecentSearches> _recentSettingsSearches;
 

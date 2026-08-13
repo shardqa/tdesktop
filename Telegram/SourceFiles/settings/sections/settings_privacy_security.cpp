@@ -27,7 +27,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "core/core_cloud_password.h"
 #include "core/core_settings.h"
 #include "core/update_checker.h"
-#include "data/components/passkeys.h"
+
 #include "data/components/top_peers.h"
 #include "data/data_channel.h"
 #include "data/data_chat.h"
@@ -39,7 +39,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "main/main_app_config.h"
 #include "main/main_domain.h"
 #include "main/main_session.h"
-#include "platform/platform_webauthn.h"
+
 #include "settings/settings_builder.h"
 #include "settings/cloud_password/settings_cloud_password_email_confirm.h"
 #include "settings/cloud_password/settings_cloud_password_input.h"
@@ -49,7 +49,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "settings/sections/settings_blocked_peers.h"
 #include "settings/sections/settings_global_ttl.h"
 #include "settings/sections/settings_local_passcode.h"
-#include "settings/sections/settings_passkeys.h"
+
 #include "settings/sections/settings_premium.h"
 #include "settings/settings_privacy_controllers.h"
 #include "settings/sections/settings_websites.h"
@@ -652,57 +652,6 @@ void BuildSecuritySection(
 		},
 		.keywords = { u"passcode"_q, u"lock"_q, u"pin"_q },
 	});
-
-	if (session->passkeys().possible()) {
-		auto passkeysLabel = rpl::combine(
-			tr::lng_profile_loading(),
-			(rpl::single(rpl::empty_value())
-				| rpl::then(session->passkeys().requestList())) | rpl::map([=] {
-				return session->passkeys().list().size();
-			})
-		) | rpl::map([=](const QString &loading, int count) {
-			return !session->passkeys().listKnown()
-				? loading
-				: count == 1
-				? session->passkeys().list().front().name
-				: count
-				? QString::number(count)
-				: tr::lng_settings_cloud_password_off(tr::now);
-		});
-
-		auto passkeysShown = (rpl::single(rpl::empty_value())
-			| rpl::then(session->passkeys().requestList())) | rpl::map([=] {
-			return Platform::WebAuthn::IsSupported()
-				|| !session->passkeys().list().empty();
-		});
-
-		builder.addButton({
-			.id = u"security/passkeys"_q,
-			.title = tr::lng_settings_passkeys_title(),
-			.icon = { &st::menuIconPermissions },
-			.label = std::move(passkeysLabel),
-			.onClick = [=] {
-				if (!session->passkeys().listKnown()) {
-					return;
-				}
-				const auto count = session->passkeys().list().size();
-				if (count == 0) {
-					controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-						PasskeysNoneBox(box, session);
-						box->boxClosing() | rpl::on_next([=] {
-							if (session->passkeys().list().size()) {
-								controller->showSettings(PasskeysId());
-							}
-						}, box->lifetime());
-					}));
-				} else {
-					controller->showSettings(PasskeysId());
-				}
-			},
-			.keywords = { u"passkeys"_q, u"biometric"_q },
-			.shown = std::move(passkeysShown),
-		});
-	}
 
 	{
 		auto loginEmailShown = session->api().cloudPassword().state(

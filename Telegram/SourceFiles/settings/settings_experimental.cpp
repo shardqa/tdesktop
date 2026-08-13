@@ -8,7 +8,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "settings/settings_experimental.h"
 
 #include "settings/settings_common.h"
-#include "data/components/passkeys.h"
+
 #include "ui/layers/generic_box.h"
 #include "main/main_session.h"
 #include "ui/boxes/confirm_box.h"

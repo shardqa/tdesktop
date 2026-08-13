@@ -29,7 +29,6 @@ include(cmake/lib_ffmpeg.cmake)
 include(cmake/lib_stripe.cmake)
 include(cmake/lib_tgcalls.cmake)
 include(cmake/lib_prisma.cmake)
-include(cmake/lib_fido2.cmake)
 include(cmake/td_export.cmake)
 include(cmake/td_iv.cmake)
 include(cmake/td_lang.cmake)
@@ -37,7 +36,6 @@ include(cmake/td_mtproto.cmake)
 include(cmake/td_scheme.cmake)
 include(cmake/td_tde2e.cmake)
 include(cmake/td_ui.cmake)
-include(cmake/td_webauthn.cmake)
 include(cmake/telegram_apple_swift_runtime.cmake)
 include(cmake/generate_appstream_changelog.cmake)
 
@@ -57,7 +55,6 @@ set_target_properties(Telegram PROPERTIES AUTOMOC ON)
 
 target_link_libraries(Telegram
 PRIVATE
-    tdesktop::lib_fido2
     tdesktop::lib_tgcalls
     tdesktop::td_export
     tdesktop::td_iv
@@ -66,7 +63,6 @@ PRIVATE
     tdesktop::td_scheme
     tdesktop::td_tde2e
     tdesktop::td_ui
-    tdesktop::td_webauthn
     desktop-app::lib_webrtc
     desktop-app::lib_base
     desktop-app::lib_crl
@@ -605,8 +601,6 @@ PRIVATE
     data/components/gift_auctions.h
     data/components/location_pickers.cpp
     data/components/location_pickers.h
-    data/components/passkeys.cpp
-    data/components/passkeys.h
     data/components/promo_suggestions.cpp
     data/components/promo_suggestions.h
     data/components/recent_inline_bots.cpp
@@ -1627,7 +1621,6 @@ PRIVATE
     platform/linux/translate_provider_linux.h
     platform/linux/tray_linux.cpp
     platform/linux/tray_linux.h
-    platform/linux/webauthn_linux.cpp
     platform/mac/file_utilities_mac.mm
     platform/mac/file_utilities_mac.h
     platform/mac/global_menu_mac.h
@@ -1655,7 +1648,6 @@ PRIVATE
     platform/mac/translate_provider_mac.mm
     platform/mac/tray_mac.h
     platform/mac/tray_mac.mm
-    platform/mac/webauthn_mac.mm
     platform/mac/window_title_mac.mm
     platform/mac/touchbar/items/mac_formatter_item.h
     platform/mac/touchbar/items/mac_formatter_item.mm
@@ -1691,7 +1683,6 @@ PRIVATE
     platform/win/translate_provider_win.h
     platform/win/tray_win.cpp
     platform/win/tray_win.h
-    platform/win/webauthn_win.cpp
     platform/win/windows_app_user_model_id.cpp
     platform/win/windows_app_user_model_id.h
     platform/win/windows_dlls.cpp
@@ -1714,7 +1705,6 @@ PRIVATE
     platform/platform_specific.h
     platform/platform_translate_provider.h
     platform/platform_tray.h
-    platform/platform_webauthn.h
     platform/platform_window_title.h
     profile/profile_block_widget.cpp
     profile/profile_block_widget.h
@@ -1814,8 +1804,6 @@ PRIVATE
     settings/sections/settings_notifications_reactions.h
     settings/sections/settings_notifications_type.cpp
     settings/sections/settings_notifications_type.h
-    settings/sections/settings_passkeys.cpp
-    settings/sections/settings_passkeys.h
     settings/settings_power_saving.cpp
     settings/settings_power_saving.h
     settings/sections/settings_premium.cpp
@@ -1988,12 +1976,6 @@ PRIVATE
     ui/unread_badge.h
     ui/peer/video_userpic_player.cpp
     ui/peer/video_userpic_player.h
-    webauthn/cable.h
-    webauthn/cable_box.cpp
-    webauthn/cable_box.h
-    webauthn/cable_ceremony.cpp
-    webauthn/webauthn_common.cpp
-    webauthn/webauthn_common.h
     window/main_window.cpp
     window/main_window.h
     window/notifications_manager.cpp

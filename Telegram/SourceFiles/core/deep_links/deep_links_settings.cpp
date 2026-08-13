@@ -46,8 +46,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 #include "settings/sections/settings_business.h"
 #include "settings/sections/settings_calls.h"
 #include "settings/sections/settings_chat.h"
-#include "settings/sections/settings_passkeys.h"
-#include "data/components/passkeys.h"
+
 #include "calls/calls_box_controller.h"
 #include "settings/sections/settings_credits.h"
 #include "settings/sections/settings_folders.h"
@@ -231,40 +230,6 @@ Result ShowLogOutMenu(const Context &ctx) {
 	}
 	ctx.controller->setHighlightControlId(u"settings/log-out"_q);
 	ctx.controller->showSettings(::Settings::MainId());
-	return Result::Handled;
-}
-
-Result ShowPasskeys(const Context &ctx, bool highlightCreate) {
-	if (!ctx.controller) {
-		return Result::NeedsAuth;
-	}
-	const auto controller = ctx.controller;
-	const auto session = &controller->session();
-	const auto showBox = [=] {
-		if (highlightCreate) {
-			controller->setHighlightControlId(u"passkeys/create"_q);
-		}
-		if (session->passkeys().list().empty()) {
-			controller->show(Box([=](not_null<Ui::GenericBox*> box) {
-				::Settings::PasskeysNoneBox(box, session);
-				box->boxClosing() | rpl::on_next([=] {
-					if (!session->passkeys().list().empty()) {
-						controller->showSettings(::Settings::PasskeysId());
-					}
-				}, box->lifetime());
-			}));
-		} else {
-			controller->showSettings(::Settings::PasskeysId());
-		}
-	};
-	if (session->passkeys().listKnown()) {
-		showBox();
-	} else {
-		session->passkeys().requestList(
-		) | rpl::take(1) | rpl::on_next([=] {
-			showBox();
-		}, controller->lifetime());
-	}
 	return Result::Handled;
 }
 
@@ -677,20 +642,6 @@ void RegisterSettingsHandlers(Router &router) {
 		.path = u"privacy/2sv/change-email"_q,
 		.action = CodeBlock{ [=](const Context &ctx) {
 			return openCloudPassword(ctx, u"2sv/change-email"_q);
-		}},
-	});
-
-	router.add(u"settings"_q, {
-		.path = u"privacy/passkey"_q,
-		.action = CodeBlock{ [](const Context &ctx) {
-			return ShowPasskeys(ctx, false);
-		}},
-	});
-
-	router.add(u"settings"_q, {
-		.path = u"privacy/passkey/create"_q,
-		.action = CodeBlock{ [](const Context &ctx) {
-			return ShowPasskeys(ctx, true);
 		}},
 	});
 
