@@ -193,7 +193,6 @@ private:
 	bool _resumeFromTrimmedListen = false;
 	rpl::variable<bool> _paused;
 
-	base::Timer _startTimer;
 
 	rpl::event_stream<SendActionUpdate> _sendActionUpdates;
 	rpl::event_stream<VoiceToSend> _sendVoiceRequests;

@@ -2110,7 +2110,6 @@ VoiceRecordBar::VoiceRecordBar(
 , _lock(std::make_unique<RecordLock>(_outerContainer, _st.lock))
 , _level(std::make_unique<VoiceRecordButton>(_outerContainer, _st))
 , _cancel(std::make_unique<CancelButton>(this, _st, descriptor.recorderHeight))
-, _startTimer([=] { startRecording(); })
 , _message(
 	st::historyRecordTextStyle,
 	(!descriptor.customCancelText.isEmpty()
@@ -2425,25 +2424,14 @@ void VoiceRecordBar::init() {
 			st::universalDuration);
 	}, lifetime());
 
-	_send->events(
-	) | rpl::filter([=](not_null<QEvent*> e) {
+	_send->clicks(
+	) | rpl::filter([=] {
 		return isTypeRecord()
 			&& !isRecording()
 			&& !_showAnimation.animating()
-			&& !_lock->isLocked()
-			&& (e->type() == QEvent::MouseButtonPress
-				|| e->type() == QEvent::MouseButtonRelease);
-	}) | rpl::on_next([=](not_null<QEvent*> e) {
-		if (e->type() == QEvent::MouseButtonPress) {
-			if (_startRecordingFilter && _startRecordingFilter()) {
-				return;
-			}
-			prepareOnSendPress();
-			_startTimer.callOnce(st::universalDuration);
-		} else if (e->type() == QEvent::MouseButtonRelease) {
-			checkTipRequired();
-			_startTimer.cancel();
-		}
+			&& !_lock->isLocked();
+	}) | rpl::on_next([=] {
+		startRecordingAndLock(false);
 	}, lifetime());
 
 	_listenChanges.events(

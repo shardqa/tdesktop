@@ -5275,25 +5275,7 @@ auto HistoryInner::reactionButtonParameters(
 	QPoint position,
 	const HistoryView::TextState &reactionState) const
 -> HistoryView::Reactions::ButtonParameters {
-	if (!_useCornerReaction) {
-		return {};
-	}
-	const auto top = itemTop(view);
-	if (top < 0
-		|| !view->data()->canReact()
-		|| _mouseAction == MouseAction::Dragging
-		|| _mouseAction == MouseAction::Selecting
-		|| inSelectionMode().inSelectionMode) {
-		return {};
-	}
-	auto result = view->reactionButtonParameters(
-		position,
-		reactionState
-	).translated({ 0, top });
-	result.visibleTop = _visibleAreaTop;
-	result.visibleBottom = _visibleAreaBottom;
-	result.globalPointer = _mousePosition;
-	return result;
+	return {};
 }
 
 auto HistoryInner::replyButtonParameters(
