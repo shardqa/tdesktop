@@ -2252,7 +2252,7 @@ void ComposeControls::init() {
 	if (_attachToggle) {
 		_attachToggle->setAccessibleName(tr::lng_attach(tr::now));
 	}
-	_tabbedSelectorToggle->setAccessibleName(tr::lng_emoji_sticker_gif(tr::now));
+	_tabbedSelectorToggle->hide();
 
 	initField();
 	initTabbedSelector();
@@ -4025,7 +4025,7 @@ void ComposeControls::finishAnimating() {
 
 void ComposeControls::updateControlsGeometry(QSize size) {
 	// (_commentsShown) (_attachToggle|_replaceMedia) (_sendAs) -- _inlineResults ------ _tabbedPanel -- _fieldBarCancel (_starsReaction)
-	// (_attachDocument|_attachPhoto) _field (_ttlInfo) (_scheduled) (_silent|_botCommandStart) _tabbedSelectorToggle _send
+	// (_attachDocument|_attachPhoto) _field (_ttlInfo) (_scheduled) (_silent|_botCommandStart) _send
 
 	const auto oldComposeHeight = shouldShowRichDraftPreview()
 		? _richDraftPreview->height()
@@ -4042,7 +4042,6 @@ void ComposeControls::updateControlsGeometry(QSize size) {
 		- _st.padding.right()
 		- _send->width()
 		- (_editStars ? _editStars->width() : 0)
-		- _tabbedSelectorToggle->width()
 		- (_likeShown ? _like->width() : 0)
 		- (_botCommandShown ? _botCommandStart->width() : 0)
 		- ((_silent && !_silent->isHidden()) ? _silent->width() : 0)
@@ -4116,8 +4115,7 @@ void ComposeControls::updateControlsGeometry(QSize size) {
 		_editStars->moveToRight(right, buttonsTop);
 		right += _editStars->width();
 	}
-	_tabbedSelectorToggle->moveToRight(right, buttonsTop);
-	right += _tabbedSelectorToggle->width();
+
 	if (_like) {
 		using Type = Controls::WriteRestrictionType;
 		if (_writeRestriction.current().type == Type::PremiumRequired) {
@@ -4201,21 +4199,7 @@ void ComposeControls::updateControlsVisibility() {
 }
 
 void ComposeControls::updateAiButtonVisibility() {
-	const auto hidden = !hasEnoughLinesForAi()
-		|| !_wrap->isVisible()
-		|| _recording.current()
-		|| !_field->isVisible();
-	if (_aiButton->isHidden() == hidden) {
-		return;
-	}
-	const auto shown = !hidden;
-	_aiButton->setVisible(shown);
-	if (shown) {
-		updateAiButtonGeometry();
-	}
-	if (_aiTooltipManager) {
-		_aiTooltipManager->updateVisibility(shown);
-	}
+	_aiButton->hide();
 }
 
 void ComposeControls::updateExpandButtonVisibility() {

@@ -4049,13 +4049,13 @@ void HistoryWidget::updateControlsVisibility() {
 			_botCommandStart->hide();
 		} else if (_kbReplyTo) {
 			_kbScroll->hide();
-			_tabbedSelectorToggle->show();
+			_tabbedSelectorToggle->hide();
 			_botKeyboardHide->hide();
 			_botKeyboardShow->hide();
 			_botCommandStart->hide();
 		} else {
 			_kbScroll->hide();
-			_tabbedSelectorToggle->show();
+			_tabbedSelectorToggle->hide();
 			_botKeyboardHide->hide();
 			if (_keyboard->hasMarkup()) {
 				_botKeyboardShow->show();
@@ -4072,7 +4072,7 @@ void HistoryWidget::updateControlsVisibility() {
 			_attachToggle->show();
 		}
 		if (_botMenu.button) {
-			_botMenu.button->show();
+			_botMenu.button->hide();
 		}
 		if (_sendRestriction) {
 			_sendRestriction->hide();
@@ -6848,7 +6848,7 @@ void HistoryWidget::toggleKeyboard(bool manual) {
 	if (_botKeyboardHide->isHidden()
 		&& canWriteMessage()
 		&& !_showAnimation) {
-		_tabbedSelectorToggle->show();
+		_tabbedSelectorToggle->hide();
 	} else {
 		_tabbedSelectorToggle->hide();
 	}
@@ -7023,20 +7023,7 @@ bool HistoryWidget::textExceedsMaxSize() const {
 }
 
 void HistoryWidget::updateAiButtonVisibility() {
-	const auto hidden = !hasEnoughLinesForAi()
-		|| !_send->isVisible()
-		|| !_field->isVisible();
-	if (_aiButton->isHidden() == hidden) {
-		return;
-	}
-	const auto shown = !hidden;
-	_aiButton->setVisible(shown);
-	if (shown) {
-		updateAiButtonGeometry();
-	}
-	if (_aiTooltipManager) {
-		_aiTooltipManager->updateVisibility(shown);
-	}
+	_aiButton->hide();
 }
 
 void HistoryWidget::updateExpandButtonVisibility() {
@@ -7122,11 +7109,6 @@ void HistoryWidget::moveFieldControls() {
 
 	auto buttonsBottom = bottom - _attachToggle->height();
 	auto left = st::historySendRight;
-	if (_botMenu.button) {
-		const auto skip = st::historyBotMenuSkip;
-		_botMenu.button->moveToLeft(left + skip, buttonsBottom + skip);
-		left += skip + _botMenu.button->width();
-	}
 	if (_replaceMedia) {
 		_replaceMedia->moveToLeft(left, buttonsBottom);
 	}
@@ -7147,7 +7129,6 @@ void HistoryWidget::moveFieldControls() {
 	auto right = st::historySendRight;
 	_send->moveToRight(right, buttonsBottom); right += _send->width();
 	_voiceRecordBar->moveToLeft(0, bottom - _voiceRecordBar->height());
-	_tabbedSelectorToggle->moveToRight(right, buttonsBottom);
 	_botKeyboardHide->moveToRight(right, buttonsBottom);
 	right += _botKeyboardHide->width();
 	_botKeyboardShow->moveToRight(right, buttonsBottom);
@@ -7213,11 +7194,7 @@ void HistoryWidget::updateFieldSize() {
 	auto fieldWidth = width()
 		- _attachToggle->width()
 		- st::historySendRight
-		- _send->width()
-		- _tabbedSelectorToggle->width();
-	if (_botMenu.button) {
-		fieldWidth -= st::historyBotMenuSkip + _botMenu.button->width();
-	}
+		- _send->width();
 	if (_sendAs) {
 		fieldWidth -= _sendAs->width();
 	}
@@ -8481,7 +8458,7 @@ void HistoryWidget::updateBotKeyboard(History *h, bool force) {
 					showKeyboardHideButton();
 				} else {
 					_kbScroll->hide();
-					_tabbedSelectorToggle->show();
+					_tabbedSelectorToggle->hide();
 					_botKeyboardHide->hide();
 				}
 				_botKeyboardShow->hide();
@@ -8505,7 +8482,7 @@ void HistoryWidget::updateBotKeyboard(History *h, bool force) {
 		} else {
 			if (!_showAnimation) {
 				_kbScroll->hide();
-				_tabbedSelectorToggle->show();
+				_tabbedSelectorToggle->hide();
 				_botKeyboardHide->hide();
 				_botKeyboardShow->show();
 				_botCommandStart->hide();
@@ -8524,7 +8501,7 @@ void HistoryWidget::updateBotKeyboard(History *h, bool force) {
 	} else {
 		if (!_scroll->isHidden()) {
 			_kbScroll->hide();
-			_tabbedSelectorToggle->show();
+			_tabbedSelectorToggle->hide();
 			_botKeyboardHide->hide();
 			_botKeyboardShow->hide();
 			_botCommandStart->setVisible(!_editMsgId);
