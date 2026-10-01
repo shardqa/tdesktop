@@ -5757,11 +5757,8 @@ auto HistoryWidget::computeSendButtonType() const {
 	} else if (_isInlineBot) {
 		return Type::Cancel;
 	} else if (showRecordButton()) {
-		const auto both = Webrtc::RecordAvailability::VideoAndAudio;
-		const auto video = Core::App().settings().recordVideoMessages();
-		return (video && _recordAvailability == both)
-			? Type::Round
-			: Type::Record;
+		// richard: never offer the round (video) recorder, always voice.
+		return Type::Record;
 	}
 	return Type::Send;
 }
