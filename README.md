@@ -1,5 +1,9 @@
 # [Telegram Desktop][telegram_desktop] – Official Messenger
 
+> **Richard's fork.** This checkout carries local customizations on the
+> `richard` branch. See [docs/richard-customizations.md](docs/richard-customizations.md)
+> for what each change does, how to build, and how to deploy to the ThinkPad.
+
 This is the complete source code and the build instructions for the official [Telegram][telegram] messenger desktop client, based on the [Telegram API][telegram_api] and the [MTProto][telegram_proto] secure protocol.
 
 [![Version](https://badge.fury.io/gh/telegramdesktop%2Ftdesktop.svg)](https://github.com/telegramdesktop/tdesktop/releases)
