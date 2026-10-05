@@ -9,6 +9,7 @@ https://github.com/telegramdesktop/tdesktop/blob/master/LEGAL
 
 #include "api/api_common.h"
 #include "base/timer.h"
+#include "data/data_audio_msg_id.h"
 #include "history/view/controls/compose_controls_common.h"
 #include "media/audio/media_audio_capture_common.h"
 #include "ui/controls/round_video_recorder.h"
@@ -147,6 +148,10 @@ private:
 	void installListenStateFilter();
 
 	void startRecording();
+
+	// richard: pause playback while recording, resume when the bar hides.
+	void pausePlaybackForRecording();
+	void resumePlaybackAfterRecording();
 	void prepareOnSendPress();
 	void applyListenTrimForResume();
 	void clearResumePrefix();
@@ -214,6 +219,11 @@ private:
 
 	bool _warningShown = false;
 	bool _pauseInsteadSend = false;
+
+	// richard: pause audio playback while recording, resume after send/cancel.
+	AudioMsgId::Type _pausedForRecordType
+		= AudioMsgId::Type::Unknown;
+	bool _resumePlaybackAfterRecord = false;
 
 	rpl::variable<bool> _recording = false;
 	rpl::variable<bool> _inField = false;

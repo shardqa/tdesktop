@@ -2563,6 +2563,43 @@ void VoiceRecordBar::initLevelGeometry() {
 	}, lifetime());
 }
 
+void VoiceRecordBar::pausePlaybackForRecording() {
+	// richard: like Android, pause whatever is playing so the user can
+	// concentrate on their own voice. Resumed after send/cancel.
+	const auto player = ::Media::Player::instance();
+	for (const auto type : { AudioMsgId::Type::Voice,
+			AudioMsgId::Type::Song,
+			AudioMsgId::Type::Video }) {
+		const auto state = player->getState(type);
+		if (::Media::Player::IsStoppedOrStopping(state.state)) {
+			continue;
+		}
+		if (!::Media::Player::IsActive(state.state)
+			&& !::Media::Player::IsPausedOrPausing(state.state)) {
+			continue;
+		}
+		player->pause(type);
+		_pausedForRecordType = type;
+		_resumePlaybackAfterRecord
+			= !::Media::Player::IsPausedOrPausing(state.state);
+		break;
+	}
+}
+
+void VoiceRecordBar::resumePlaybackAfterRecording() {
+	if (!_resumePlaybackAfterRecord) {
+		_pausedForRecordType = AudioMsgId::Type::Unknown;
+		return;
+	}
+	_resumePlaybackAfterRecord = false;
+	if (_pausedForRecordType == AudioMsgId::Type::Unknown) {
+		return;
+	}
+	const auto type = _pausedForRecordType;
+	_pausedForRecordType = AudioMsgId::Type::Unknown;
+	::Media::Player::instance()->play(type);
+}
+
 void VoiceRecordBar::startRecordingAndLock(bool round) {
 	{
 		auto sendState = _send->state();
@@ -2578,6 +2615,7 @@ void VoiceRecordBar::startRecordingAndLock(bool round) {
 
 	_lock->show();
 	_lock->requestPaintProgress(1.);
+	pausePlaybackForRecording();
 	startRecording();
 }
 
@@ -2815,6 +2853,7 @@ void VoiceRecordBar::stop(bool send) {
 }
 
 void VoiceRecordBar::finish() {
+	resumePlaybackAfterRecording();
 	_recordingLifetime.destroy();
 	_lockShowing = false;
 	_inField = false;
